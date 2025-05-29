@@ -110,7 +110,7 @@ def main(args):
         num_classes = len(class_counts)
         
         total_samples = len(train_labels)
-        classes_w_list = [total_samples / (num_classes + class_counter[i] for i in sorted(class_counter.keys())]
+        classes_w_list = [total_samples / (num_classes + class_counter[i] for i in sorted(class_counter.keys()))]
         classes_w = torch.tensor(class_w_list, dtype=torch.float).to(device)
         printf(f"Classes weights: {classes_w})
         

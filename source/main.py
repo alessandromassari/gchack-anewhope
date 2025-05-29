@@ -6,7 +6,7 @@ from loadData import GraphDataset
 import pandas as pd 
 from trainer import pretraining, train_epoch
 from utilities import create_dirs, save_checkpoint
-from my_model import myGIN
+from my_model import NHNmodel
 from sklearn.model_selection import train_test_split
 import torch.nn.functional as F
 

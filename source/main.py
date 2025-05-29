@@ -50,10 +50,8 @@ def main(args):
     # Hyperparameters for the model (circa a ctrl+c - ctrl+v from competiton GitHub)
     node_in_dim = 1
     edge_in_dim = 7
-    hid_dim = 128
     hidden_dim = 64         # 128
-    num_layers = 4            # previous val: 
-    jk_mode = 'cat'
+    num_layers = 4          # previous val: 
     mlp_dims = (256,128)
     out_classes = 6
     dropout = 0.4
@@ -68,11 +66,10 @@ def main(args):
     # early stopping parameters (MAYBE IN THE FUTURE)
     
     # Initialize the model and choose the optimizer
-    model = myGIN(node_in_dim=node_in_dim,
+    model = NHNmodel(node_in_dim=node_in_dim,
         edge_in_dim=edge_in_dim,
         hidden_dim=hidden_dim,
         num_layers=num_layers,
-        jk_mode=jk_mode,
         mlp_classifier_dims=mlp_dims,
         out_classes=out_classes,
         dropout=dropout

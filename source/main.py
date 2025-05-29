@@ -9,6 +9,7 @@ from utilities import create_dirs, save_checkpoint
 from my_model import NHNmodel
 from sklearn.model_selection import train_test_split
 import torch.nn.functional as F
+from collections import Counter
 
 def evaluate(model, data_loader, device, calculate_accuracy=False):
     model.eval()
@@ -99,6 +100,20 @@ def main(args):
         train_dataset = torch.utils.data.Subset(all_train_dataset, train_index)
         val_dataset = torch.utils.data.Subset(all_train_dataset, val_index)
         
+        # classes_w definition
+        classes_w = None
+        if isinstance(train_dataset[0],y, torch.Tensor) and train_dataset[0].y.numel() ==1:
+            train_labels = [d.y.item() for d in train_dataset]
+        else:
+            train_labels = [d.y for d in train_dataset]
+        class_counter = Counter(train_labels)
+        num_classes = len(class_counts)
+        
+        total_samples = len(train_labels)
+        classes_w_list = [total_samples / (num_classes + class_counter[i] for i in sorted(class_counter.keys())]
+        classes_w = torch.tensor(class_w_list, dtype=torch.float).to(device)
+        printf(f"Classes weights: {classes_w})
+        
         train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
         val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False)
         
@@ -112,7 +127,7 @@ def main(args):
         # -----------   Training loop   ------------ #
         best_val_acc = 0.0
         for epoch in range(num_epochs):
-            train_loss, train_acc = train_epoch(model,train_loader, optimizer, device)
+            train_loss, train_acc = train_epoch(model,train_loader, optimizer, device, classes_w)
             print(f"TRAININIG: Epoch {epoch+1}/{num_epochs}, Loss: {train_loss:.4f}, Acc: {train_acc:.4f}")
             
             # validation valutation every 5 epoches

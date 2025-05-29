@@ -8,7 +8,7 @@ from trainer import pretraining, train_epoch
 from utilities import create_dirs, save_checkpoint
 from my_model import myGIN
 from sklearn.model_selection import train_test_split
-
+import torch.nn.functional as F
 
 def evaluate(model, data_loader, device, calculate_accuracy=False):
     model.eval()

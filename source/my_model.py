@@ -16,41 +16,41 @@ class myGIN(nn.Module):
                  dropout: float = 0.4):
     
     super().__init__()
-        self.num_layers = num_layers
-        self.drop_p = dropout
+    self.num_layers = num_layers
+    self.drop_p = dropout
 
-        self.convs = nn.ModuleList()
-        for i in range(num_layers):
-            in_ch = node_in_dim if i == 0 else hidden_dim
-            #MLP for edge weights
-            nn_edge = nn.Sequential(
-                nn.Linear(edge_in_dim, hidden_dim),
+    self.convs = nn.ModuleList()
+    for i in range(num_layers):
+        in_ch = node_in_dim if i == 0 else hidden_dim
+        #MLP for edge weights
+        nn_edge = nn.Sequential(
+            nn.Linear(edge_in_dim, hidden_dim),
+            nn.ReLU(),
+            nn.Linear(hidden_dim, in_ch*hidden_dim)
+        )
+        conv = GINConv(nn_edge,  train_eps=True, aggr='sum')
+        self.convs.append(conv)
+
+        #jumping knowledge aggregator
+        self.jk = JumpingKnowledge(mode=jk_mode)
+
+        # pooling stage
+        self.pool_fns = [global_mean_pool, global_max_pool, global_add_pool]
+
+        # final MLP classifier
+        mlp_layers = []
+        input_dim = hidden_dim * num_layers * len(self.pool_fns) if jk_mode == 'cat' else hidden_dim * len(self.pool_fns)
+        prev_dim = input_dim
+        for dim in mlp_classifier_dims:
+            mlp_layers += [
+                nn.Linear(prev_dim, dim),
+                nn.LayerNorm(dim),
                 nn.ReLU(),
-                nn.Linear(hidden_dim, in_ch*hidden_dim)
-            )
-            conv = GINConv(nn_edge,  train_eps=True, aggr='sum')
-            self.convs.append(conv)
-
-            #jumping knowledge aggregator
-            self.jk = JumpingKnowledge(mode=jk_mode)
-
-            # pooling stage
-            self.pool_fns = [global_mean_pool, global_max_pool, global_add_pool]
-
-            # final MLP classifier
-            mlp_layers = []
-            input_dim = hidden_dim * num_layers * len(self.pool_fns) if jk_mode == 'cat' else hidden_dim * len(self.pool_fns)
-            prev_dim = input_dim
-            for dim in mlp_classifier_dims:
-                mlp_layers += [
-                    nn.Linear(prev_dim, dim),
-                    nn.LayerNorm(dim),
-                    nn.ReLU(),
-                    nn.Dropout(dropout)
-                ]
-                prev_dim = dim
-            mlp_layers.append(nn.Linear(prev_dim, out_classes))
-            self.classifier = nn.Sequential(*mlp_layers)
+                nn.Dropout(dropout)
+            ]
+            prev_dim = dim
+        mlp_layers.append(nn.Linear(prev_dim, out_classes))
+        self.classifier = nn.Sequential(*mlp_layers)
 
     def forward(self, x, edge_index, edge_attr, batch):
         # x: [N, node_in_dim]

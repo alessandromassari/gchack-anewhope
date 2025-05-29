@@ -90,7 +90,7 @@ def main(args):
     
     # Prepare test dataset and loader
     test_dataset = GraphDataset(args.test_path)
-    test_loader = DataLoader(test_dataset, batch_size=bas, shuffle=False)
+    test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
 
      # If train_path is provided then train on it
     if args.train_path:
@@ -103,8 +103,8 @@ def main(args):
         train_dataset = torch.utils.data.Subset(all_train_dataset, train_index)
         val_dataset = torch.utils.data.Subset(all_train_dataset, val_index)
         
-        train_loader = DataLoader(train_dataset, batch_size=bas, shuffle=True)
-        val_loader = DataLoader(val_dataset, batch_size=bas, shuffle=False)
+        train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
+        val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False)
         
         # ----------- pre-training loop ------------ #
         print("\n--- Starting Pre-training of the model ---")

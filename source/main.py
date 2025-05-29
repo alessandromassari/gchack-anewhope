@@ -113,7 +113,7 @@ def main(args):
         print(f"--- Pre-training Completed ---")
         
         # -----------   Training loop   ------------ #
-        best_va_acc = 0.0
+        best_val_acc = 0.0
         for epoch in range(num_epochs):
             train_loss, train_acc = train_epoch(model,train_loader, optimizer, device)
             print(f"TRAININIG: Epoch {epoch+1}/{num_epochs}, Loss: {train_loss:.4f}, Acc: {train_acc:.4f}")

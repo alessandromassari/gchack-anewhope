@@ -21,8 +21,7 @@ def evaluate(model, data_loader, device, calculate_accuracy=False):
         for data in data_loader:
             data = data.to(device)
             output = model(data.x, data.edge_index, data.edge_attr, data.batch)
-            class_logits = output[3]
-            pred = class_logits.argmax(dim=1)
+            pred = output.argmax(dim=1)
             predictions.extend(pred.cpu().numpy())
             if calculate_accuracy:
                 correct += (pred == data.y).sum().item()

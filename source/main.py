@@ -26,7 +26,7 @@ def evaluate(model, data_loader, device, calculate_accuracy=False):
             if calculate_accuracy:
                 correct += (pred == data.y).sum().item()
                 total += data.y.size(0)
-                classification_loss = F.cross_entropy(class_logits, data.y)
+                classification_loss = F.cross_entropy(output, data.y)
                 total_loss += classification_loss.item()
                 
     if calculate_accuracy:

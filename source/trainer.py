@@ -2,6 +2,7 @@ import os
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from torch.nn import CrossEntropyLoss
 
 # reconstruction loss weight - DA SPOSTARE DA QUI
 recon_weight = 0.5 # previous value: 0.8
@@ -51,7 +52,7 @@ def train_epoch(model, loader, optimizer, device):
 
     return total_loss / len(loader), total_correct / total_examples
 
-@torch.no_grad()
+#@torch.no_grad()
         # accumulate total losses
         #total_loss += loss.item() #* data.num_graphs if hasattr(data, 'num_graphs') else loss.item() # provare weight per pesare 
         

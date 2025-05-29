@@ -102,17 +102,17 @@ def main(args):
         
         # classes_w definition
         classes_w = None
-        if isinstance(train_dataset[0],y, torch.Tensor) and train_dataset[0].y.numel() ==1:
+        if isinstance(train_dataset[0].y, torch.Tensor) and train_dataset[0].y.numel() ==1:
             train_labels = [d.y.item() for d in train_dataset]
         else:
             train_labels = [d.y for d in train_dataset]
         class_counter = Counter(train_labels)
-        num_classes = len(class_counts)
+        num_classes = len(class_counter)
         
         total_samples = len(train_labels)
-        classes_w_list = [total_samples / (num_classes + class_counter[i] for i in sorted(class_counter.keys()))]
+        classes_w_list = [total_samples / (class_counter[i] for i in sorted(class_counter.keys()))]
         classes_w = torch.tensor(class_w_list, dtype=torch.float).to(device)
-        printf(f"Classes weights: {classes_w}")
+        print(f"Classes weights: {classes_w}")
         
         train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
         val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False)

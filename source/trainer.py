@@ -7,12 +7,6 @@ from torch.nn import CrossEntropyLoss
 # reconstruction loss weight - DA SPOSTARE DA QUI
 recon_weight = 0.5 # previous value: 0.8
 
-# our beloved Kullback-Leibler term loss
-def kl_loss(mu, logvar):
-    # clip logvar to avoid extreme values 
-    clip_logvar = torch.clamp(logvar, min=-5.0, max=5.0) 
-    return -0.5 * torch.mean(1 + clip_logvar -mu.pow(2) - clip_logvar.exp())
-
 def pretraining(model, loader, optimizer, device):
     model.train()
     total_loss = 0
@@ -28,20 +22,19 @@ def pretraining(model, loader, optimizer, device):
         total_loss += loss.item()
     return total_loss / len(loader)
 
-def train_epoch(model, loader, optimizer, device):
+def train_epoch(model, loader, optimizer, device, classes_w=None):
     model.train()
     total_loss = 0
     total_correct = 0
     total_examples = 0
     # focal loss (optional)
     # criterion = FocalLoss(gamma=2.0).to(device)
-    criterion = CrossEntropyLoss()  # + label_smoothing if desideri
     for data in loader:
         data = data.to(device)
         optimizer.zero_grad()
         out = model(data.x, data.edge_index, data.edge_attr, data.batch)
         y = data.y.view(-1)
-        loss = criterion(out, y)
+        loss = CrossEntropyLoss()(out, y, weight=classes_w)
         loss.backward()
         optimizer.step()
 

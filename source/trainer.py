@@ -34,7 +34,7 @@ def train_epoch(model, loader, optimizer, device, classes_w=None):
         optimizer.zero_grad()
         out = model(data.x, data.edge_index, data.edge_attr, data.batch)
         y = data.y.view(-1)
-        loss = CrossEntropyLoss()(out, y, weight=classes_w)
+        loss = CrossEntropyLoss(out, y, weight=classes_w)
         loss.backward()
         optimizer.step()
 

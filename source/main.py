@@ -36,7 +36,7 @@ def evaluate(model, data_loader, device, calculate_accuracy=False):
         else: 
             accuracy = 0.0
             avg_loss = 0.0
-        return accuracy, avg_loss, predictions
+        return accuracy, avg_loss
     return predictions
 
 def main(args):

@@ -2,7 +2,6 @@ import os
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from torch.nn import CrossEntropyLoss
 
 # reconstruction loss weight - DA SPOSTARE DA QUI
 recon_weight = 0.5 # previous value: 0.8
@@ -34,7 +33,7 @@ def train_epoch(model, loader, optimizer, device, classes_w=None):
         optimizer.zero_grad()
         out = model(data.x, data.edge_index, data.edge_attr, data.batch)
         y = data.y.view(-1)
-        loss = CrossEntropyLoss(out, y)
+        loss = F.cross_entropy(out, y)
         loss.backward()
         optimizer.step()
 

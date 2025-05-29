@@ -4,13 +4,13 @@ import torch
 from torch_geometric.loader import DataLoader
 from loadData import GraphDataset
 import pandas as pd 
-from trainer import pretraining, train_epoch
+from trainer import pretraining, train_epoch, evaluate
 from utilities import create_dirs, save_checkpoint
 from my_model import myGIN
 from sklearn.model_selection import train_test_split
 
 
-def evaluate(data_loader, model, device, calculate_accuracy=False):
+def evaluate(model, data_loader, device, calculate_accuracy=False):
     model.eval()
     correct = 0
     total = 0
@@ -124,7 +124,7 @@ def main(args):
             val_accuracy = 0.0
             # evaluate on validation set every 5 epoches
             if (epoch+1) % 5 == 0 or epoch == num_epochs - 1:
-                val_accuracy, val_loss = evaluate(model, val_loader, device)
+                val_accuracy, val_loss = evaluate(model, val_loader, device, calculate_accuracy=True)
                 print(f"VALIDATION: Epoch {epoch + 1}/{num_epochs}, Val Loss: {val_loss:.4f}, Val Acc: {val_accuracy:.4f}")
                 if val_accuracy > best_val_acc:
                     best_val_acc = val_accuracy
@@ -144,7 +144,7 @@ def main(args):
         print(f">> Loading pre-training model from: {checkpoint_path}")
           
     # Evaluate and save test predictions
-    predictions = evaluate(test_loader, model, device, calculate_accuracy=False)
+    predictions = evaluate(model, test_loader, device, calculate_accuracy=False)
     test_graph_ids = list(range(len(predictions)))  # Generate IDs for graphs
 
     # Save predictions to CSV

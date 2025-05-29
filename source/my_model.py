@@ -24,9 +24,9 @@ class myGIN(nn.Module):
             in_ch = node_in_dim if i == 0 else hidden_dim
             #MLP for edge weights
             nn_edge = nn.Sequential(
-                nn.Linear(edge_in_dim, hidden_dim),
+                nn.Linear(in_ch, hidden_dim),
                 nn.ReLU(),
-                nn.Linear(hidden_dim, in_ch*hidden_dim)
+                nn.Linear(hidden_dim, hidden_dim)
             )
             conv = GINConv(nn_edge,  train_eps=True, aggr='sum')
             self.convs.append(conv)

@@ -14,7 +14,7 @@ class myGIN(nn.Module):
                  mlp_classifier_dims=(384, 256, 128),
                  out_classes: int = 6,
                  dropout: float = 0.4):
-        # <--- AGGIUNGI QUI 4 SPAZI DI INDENTAZIONE per tutte le righe successive
+        #
         super().__init__()
         self.num_layers = num_layers
         self.drop_p = dropout
@@ -58,7 +58,7 @@ class myGIN(nn.Module):
         h_list = []
         h = x
         for conv in self.convs:
-            h = conv(h, edge_index, edge_attr)
+            h = conv(h, edge_index)
             h = F.relu(h)
             h = F.dropout(h, p=self.drop_p, training=self.training)
             h_list.append(h)

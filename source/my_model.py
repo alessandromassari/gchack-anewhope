@@ -14,22 +14,22 @@ class myGIN(nn.Module):
                  mlp_classifier_dims=(384, 256, 128),
                  out_classes: int = 6,
                  dropout: float = 0.4):
-    
-    super().__init__()
-    self.num_layers = num_layers
-    self.drop_p = dropout
+        # <--- AGGIUNGI QUI 4 SPAZI DI INDENTAZIONE per tutte le righe successive
+        super().__init__()
+        self.num_layers = num_layers
+        self.drop_p = dropout
 
-    self.convs = nn.ModuleList()
-    for i in range(num_layers):
-        in_ch = node_in_dim if i == 0 else hidden_dim
-        #MLP for edge weights
-        nn_edge = nn.Sequential(
-            nn.Linear(edge_in_dim, hidden_dim),
-            nn.ReLU(),
-            nn.Linear(hidden_dim, in_ch*hidden_dim)
-        )
-        conv = GINConv(nn_edge,  train_eps=True, aggr='sum')
-        self.convs.append(conv)
+        self.convs = nn.ModuleList()
+        for i in range(num_layers):
+            in_ch = node_in_dim if i == 0 else hidden_dim
+            #MLP for edge weights
+            nn_edge = nn.Sequential(
+                nn.Linear(edge_in_dim, hidden_dim),
+                nn.ReLU(),
+                nn.Linear(hidden_dim, in_ch*hidden_dim)
+            )
+            conv = GINConv(nn_edge,  train_eps=True, aggr='sum')
+            self.convs.append(conv)
 
         #jumping knowledge aggregator
         self.jk = JumpingKnowledge(mode=jk_mode)

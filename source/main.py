@@ -115,8 +115,6 @@ def main(args):
         # -----------   Training loop   ------------ #
         best_val_acc = 0.0
         for epoch in range(num_epochs):
-            #DEBUG PRINT
-            print(data.x.mean(), data.x.std())
             
             train_loss, train_acc = train_epoch(model,train_loader, optimizer, device, out_classes)
             print(f"TRAININIG: Epoch {epoch+1}/{num_epochs}, Loss: {train_loss:.4f}, Acc: {train_acc:.4f}")

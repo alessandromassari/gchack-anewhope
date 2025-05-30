@@ -53,7 +53,7 @@ def main(args):
     # Hyperparameters for the model (circa a ctrl+c - ctrl+v from competiton GitHub)
     node_in_dim = 1
     edge_in_dim = 7
-    hidden_dim = 64         # previous val: 64 - 128
+    hidden_dim = 92         # previous val: 64 - 128
     num_layers = 4          # previous val: 
     mlp_dims = (256,128)
     out_classes = 6

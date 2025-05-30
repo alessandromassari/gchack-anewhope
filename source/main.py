@@ -10,7 +10,7 @@ from my_model import NHNmodel
 from sklearn.model_selection import train_test_split
 import torch.nn.functional as F
 from collections import Counter
-from torch.optim.lr_scheduler importfrom torch.optim.lr_scheduler import ReduceLROnPlateau
+from torch.optim.lr_scheduler import ReduceLROnPlateau
 
 def evaluate(model, data_loader, device, calculate_accuracy=False):
     model.eval()

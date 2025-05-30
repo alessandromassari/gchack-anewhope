@@ -115,7 +115,7 @@ def main(args):
         # -----------   Training loop   ------------ #
         best_val_acc = 0.0
         for epoch in range(num_epochs):
-            train_loss, train_acc = train_epoch(model,train_loader, optimizer, device)
+            train_loss, train_acc = train_epoch(model,train_loader, optimizer, device, num_classes)
             print(f"TRAININIG: Epoch {epoch+1}/{num_epochs}, Loss: {train_loss:.4f}, Acc: {train_acc:.4f}")
             
             # validation valutation every 5 epoches

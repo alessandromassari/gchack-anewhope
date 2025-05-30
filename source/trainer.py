@@ -6,53 +6,58 @@ import torch.nn.functional as F
 # reconstruction loss weight - DA SPOSTARE DA QUI
 recon_weight = 0.5 # previous value: 0.8
 # define GCODLoss
+
 class GCODLoss(nn.Module):
-    def __init__(self, num_classes, q = 0.5, k=2, gamma=0.7, threshold = 0.5):
+    def __init__(self, num_classes, q=0.449, k=2, gamma=0.6309, threshold=0.5, label_smoothing=0.1, eps=1e-7):
+        """
+        Generalized Cross-Entropy with Outlier Detection (GCOD) Loss with Label Smoothing.
+
+        Args:
+            num_classes (int): Number of classes.
+            q (float): Parameter for the Generalized Cross-Entropy (GCE) part. Defaults to 0.449.
+            k (int): Number of smallest confident scores to consider for outlier detection. Defaults to 2.
+            gamma (float): Weighting factor for the outlier detection loss. Defaults to 0.6309.
+            threshold (float): Confidence score threshold. Defaults to 0.5.
+            label_smoothing (float): Label smoothing factor between 0 and 1. Defaults to 0.1.
+            eps (float): Small constant for numerical stability. Defaults to 1e-7.
+        """
         super(GCODLoss, self).__init__()
         self.num_classes = num_classes
         self.q = q
         self.k = k
         self.gamma = gamma
         self.threshold = threshold
+        self.label_smoothing = label_smoothing
+        self.eps = eps
 
     def forward(self, logits, targets):
-        """
-        Args:
-            logits (torch.Tensor): Model output before softmax (batch_size, num_classes).
-            targets (torch.Tensor): True labels (batch_size).
-        Returns:
-            torch.Tensor: The computed GCOD loss.
-        """
-        if torch.isnan(logits).any() or torch.isinf(logits).any():
-            print("GCODLoss.forward: NaN/Inf found in input 'logits'!")
-        #     raise ValueError("NaN/Inf in GCODLoss input 'logits'")
-        if torch.isnan(targets).any() or torch.isinf(targets).any():
-            print("GCODLoss.forward: NaN/Inf found in input 'targets'!")
-        #     raise ValueError("NaN/Inf in GCODLoss input 'targets'")
-            
-        # Convert targets to one-hot encoding
+        # Convert targets to one-hot encoding with label smoothing
         targets_one_hot = F.one_hot(targets, num_classes=self.num_classes).float().to(logits.device)
+        smooth_targets = (1 - self.label_smoothing) * targets_one_hot + self.label_smoothing / self.num_classes
 
-        # Compute the GCE loss
+        # Compute softmax and clip values for numerical stability
+        logits = logits.clamp(min=-15, max=15)
         softmax_output = F.softmax(logits, dim=1)
-        gce_term_base = (softmax_output * targets_one_hot).sum(dim=1)
-        epsilon = 1e-12
-        
-        gce_loss = torch.mean((1. - gce_term_base + epsilon)**self.q / self.q)
+        softmax_output = torch.clamp(softmax_output, min=self.eps, max=1.0)
+
+        # Compute the GCE loss with smoothed targets
+        prod = (softmax_output * smooth_targets).sum(dim=1)
+        prod = torch.clamp(prod, min=self.eps)
+        gce_loss = torch.mean((1. - prod**self.q) / self.q)
 
         # Compute the outlier detection loss
-        # Find the k smallest confident scores
-        # 1 - softmax_output is the confidence score
         confident_scores = 1.0 - softmax_output
-        smallest_k_confident_scores, _ = torch.topk(confident_scores, self.k, dim=1, largest=False)
+        smallest_k_confident_scores, _ = torch.topk(confident_scores, min(self.k, confident_scores.size(1)), dim=1, largest=False)
         noisy_samples = torch.sum(smallest_k_confident_scores, dim=1) < self.threshold
-        outlier_loss = torch.mean(smallest_k_confident_scores[noisy_samples])
+
+        # Handle case when no noisy samples are found
+        outlier_loss = torch.mean(smallest_k_confident_scores[noisy_samples]) if torch.any(noisy_samples) else 0.0
 
         # Combine GCE and outlier detection loss
-        total_gcod_loss = gce_loss + self.gamma * outlier_loss
+        total_loss = gce_loss + self.gamma * outlier_loss
 
         return total_gcod_loss
-        
+
 def pretraining(model, loader, optimizer, device):
     model.train()
     total_loss = 0

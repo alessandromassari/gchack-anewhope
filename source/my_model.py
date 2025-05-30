@@ -12,7 +12,7 @@ class NHNmodel(nn.Module):
                  num_layers: int = 4,
                  mlp_classifier_dims=(384, 256, 128),
                  out_classes: int = 6,
-                 dropout: float = 0.3):
+                 dropout: float = 0.4):
         #
         super().__init__()
         self.num_layers = num_layers

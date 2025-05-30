@@ -10,6 +10,7 @@ from my_model import NHNmodel
 from sklearn.model_selection import train_test_split
 import torch.nn.functional as F
 from collections import Counter
+from torch.optim.lr_scheduler importfrom torch.optim.lr_scheduler import ReduceLROnPlateau
 
 def evaluate(model, data_loader, device, calculate_accuracy=False):
     model.eval()
@@ -51,14 +52,14 @@ def main(args):
     # Hyperparameters for the model (circa a ctrl+c - ctrl+v from competiton GitHub)
     node_in_dim = 1
     edge_in_dim = 7
-    hidden_dim = 64         # 128
+    hidden_dim = 96         # previous val: 64 - 128
     num_layers = 4          # previous val: 
     mlp_dims = (256,128)
     out_classes = 6
     dropout = 0.4
     batch_size = 16
     learning_rate = 0.0001
-    weight_decay     = 1e-4
+    weight_decay     = 5e-4 # previous val: 1e-4
     pretrain_epochs = 0
     num_epochs = 80
     
@@ -76,7 +77,8 @@ def main(args):
         dropout=dropout
     ).to(device)
     optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate, weight_decay=weight_decay)
-
+    scheduler = ReduceLROnPlateau(optimizer, mode='min', factor=0.5, patience=10, verbose=True)
+    #
     #node_feat_transf = gen_node_features(feat_dim = node_in_dim)
 
     # checkpoints saving threshold on training loss - if have time implement this on acc or validation

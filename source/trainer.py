@@ -23,6 +23,13 @@ class GCODLoss(nn.Module):
         Returns:
             torch.Tensor: The computed GCOD loss.
         """
+        #if torch.isnan(logits).any() or torch.isinf(logits).any():
+        #     print("GCODLoss.forward: NaN/Inf found in input 'logits'!")
+        #     raise ValueError("NaN/Inf in GCODLoss input 'logits'")
+        #if torch.isnan(targets).any() or torch.isinf(targets).any():
+        #     print("GCODLoss.forward: NaN/Inf found in input 'targets'!")
+        #     raise ValueError("NaN/Inf in GCODLoss input 'targets'")
+            
         # Convert targets to one-hot encoding
         targets_one_hot = F.one_hot(targets, num_classes=self.num_classes).float().to(logits.device)
 

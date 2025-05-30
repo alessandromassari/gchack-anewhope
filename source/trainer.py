@@ -35,7 +35,10 @@ class GCODLoss(nn.Module):
 
         # Compute the GCE loss
         softmax_output = F.softmax(logits, dim=1)
-        gce_loss = torch.mean((1. - (softmax_output * targets_one_hot).sum(dim=1)**self.q) / self.q)
+        gce_term_base = (softmax_output * targets_one_hot).sum(dim=1)
+        epsilon = 1e-12
+        
+        gce_loss = torch.mean((1. - gce_term_base + epsilon)**self.q / self.q)
 
         # Compute the outlier detection loss
         # Find the k smallest confident scores

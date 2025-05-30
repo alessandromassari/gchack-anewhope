@@ -45,6 +45,7 @@ def main(args):
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     print("device:", device)
     print(f"Current GPU: {torch.cuda.get_device_name(0)}")
+    torch.cuda.empty_cache()
     
     # create directories
     create_dirs()
@@ -52,7 +53,7 @@ def main(args):
     # Hyperparameters for the model (circa a ctrl+c - ctrl+v from competiton GitHub)
     node_in_dim = 1
     edge_in_dim = 7
-    hidden_dim = 96         # previous val: 64 - 128
+    hidden_dim = 64         # previous val: 64 - 128
     num_layers = 4          # previous val: 
     mlp_dims = (256,128)
     out_classes = 6

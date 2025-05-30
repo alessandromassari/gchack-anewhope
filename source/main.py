@@ -60,7 +60,7 @@ def main(args):
     dropout = 0.4
     batch_size = 16
     learning_rate = 0.0001
-    weight_decay     = 5e-4 # previous val: 1e-4
+    weight_decay     = 5e-5 # previous val: 1e-4
     pretrain_epochs = 0
     num_epochs = 80
     

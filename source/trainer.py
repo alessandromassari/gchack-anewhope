@@ -54,7 +54,7 @@ class GCODLoss(nn.Module):
         outlier_loss = torch.mean(smallest_k_confident_scores[noisy_samples]) if torch.any(noisy_samples) else 0.0
 
         # Combine GCE and outlier detection loss
-        total_loss = gce_loss + self.gamma * outlier_loss
+        total_gcod_loss = gce_loss + self.gamma * outlier_loss
 
         return total_gcod_loss
 

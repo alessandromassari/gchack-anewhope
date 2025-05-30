@@ -74,6 +74,7 @@ def train_epoch(model, loader, optimizer, device, num_classes):
         #loss = F.cross_entropy(out, y)
         loss = gcod_loss(out, y)
         loss.backward()
+        torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0) # clip gradients
         optimizer.step()
 
         total_loss += loss.item()

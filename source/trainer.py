@@ -8,7 +8,7 @@ recon_weight = 0.5 # previous value: 0.8
 # define GCODLoss
 
 class GCODLoss(nn.Module):
-    def __init__(self, num_classes, q=0.449, k=2, gamma=0.6309, threshold=0.5, label_smoothing=0.1, eps=1e-7):
+    def __init__(self, num_classes, q=0.7, k=2, gamma=0.5, threshold=0.5, label_smoothing=0.1, eps=1e-7):
         """
         Generalized Cross-Entropy with Outlier Detection (GCOD) Loss with Label Smoothing.
 

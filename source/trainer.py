@@ -16,7 +16,7 @@ from sklearn.metrics import f1_score
 from config import ModelConfig
 from my_model import EdgeVGAE
 from utilities import set_seed
-from data_loader import create_dataset_from_dataframe
+from loadData import create_dataset_from_dataframe
 
 def warm_up_lr(epoch, num_epoch_warm_up, init_lr, optimizer):
     for params in optimizer.param_groups:

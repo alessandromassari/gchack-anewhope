@@ -1,25 +1,27 @@
-import os
+
+import random
 import torch
+import numpy as np
 import logging
-from typing import Tuple
+from typing import Dict, Any
 
-def add_zeros(data):
-    data.x = torch.zeros(data.num_nodes, dtype=torch.long)  
-    return data
-    
-def create_dirs():
-    directories = ['checkpoints','logs']
-    for directory in directories:
-        os.makedirs(directory, exist_ok= True)
-# LOGGING FORSE DA IMPLEMENTARE DIRETTAMENTE IN MAIN TRAMITE LOGGING LIB
-#def set_logging(model, test_dir_name, ep: int)
-#    filename = f"logs/model_{test_dir_name}_epoch_{ep}.pth"
-#   print(f"Checkpoint saved to {filename}")
+def set_seed(seed: int):
+    random.seed(seed)
+    torch.manual_seed(seed)
+    np.random.seed(seed)
+    if torch.cuda.is_available():
+        torch.cuda.manual_seed_all(seed)
 
-                
-def save_checkpoint(model, test_dir_name: str, ep: int, val_accuracy=None):
-            filename = f"checkpoints/model_{test_dir_name}_epoch_{ep}.pth"
-            torch.save({'model_state_dict': model.state_dict(),
-                        'epoch': ep, 
-                        'val_accuracy': val_accuracy}, filename)
-            print(f" >> Checkpoint saved to: {filename}")
+def save_checkpoint(model: torch.nn.Module, 
+                   folder_name: str,
+                   cycle: int,
+                   epoch: int,
+                   metrics: Dict[str, Any]):
+    filename = f"checkpoints/model_{folder_name}_cycle_{cycle}_epoch_{epoch}.pth"
+    torch.save({
+        'model_state_dict': model.state_dict(),
+        'metrics': metrics,
+        'cycle': cycle,
+        'epoch': epoch
+    }, filename)
+    logging.info(f"Saved checkpoint: {filename}")

@@ -3,7 +3,7 @@ import sys
 import argparse
 from config import ModelConfig
 from trainer import ModelTrainer
-from data_loader import load_dataset
+from loadData  import load_dataset
 import pandas as pd
 import torch
 import logging

@@ -14,8 +14,8 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import f1_score
 
 from config import ModelConfig
-from models import EdgeVGAE
-from utils import set_seed
+from my_model import EdgeVGAE
+from utilities import set_seed
 from data_loader import create_dataset_from_dataframe
 
 def warm_up_lr(epoch, num_epoch_warm_up, init_lr, optimizer):
